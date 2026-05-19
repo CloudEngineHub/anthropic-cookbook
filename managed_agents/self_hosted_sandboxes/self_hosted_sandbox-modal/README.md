@@ -1,6 +1,6 @@
 # Modal demo — CMA Private Sandboxes
 
-Reference implementation of the [onboarding guide](../../../private_sandbox_onboarding.md)'s webhook flow on [Modal](https://modal.com). Two files:
+Reference implementation of the [usage guide](../docs/usage-guide.md)'s webhook flow on [Modal](https://modal.com). Two files:
 
 - `modal_sandbox_webhook.py` — Modal app that receives the `session.status_run_started` webhook, verifies it with `client.beta.webhooks.unwrap()`, drains the environment work queue with `client.beta.environments.work.poller(drain=True, auto_stop=False)`, and spins up a per-session Modal Sandbox per item. A per-session `modal.Volume` is mounted at `/workspace` so the agent's working tree and downloaded skills persist across sandbox restarts for the same session. The sandbox env vars use the same `ANTHROPIC_*` contract as `ant beta:worker poll --on-work`.
 - `sandbox_runner.py` — runs inside that Sandbox: `client.beta.environments.work.worker(environment_key=..., workdir="/workspace", unrestricted_paths=True).handle_item()`. It reads the `ANTHROPIC_*` env vars, builds the per-session `AgentToolContext` and downloads the agent's skills into `/workspace/skills/<name>/`, runs a `SessionToolRunner` (heartbeat + reconcile + event stream + `bash`/`read`/`write`/`edit`/`glob`/`grep` dispatch + result posting), and force-stops the work item on exit. Idle policy is the SDK default: it exits 60s after `session.status_idle` with `stop_reason: end_turn`; any other event resets the clock.
@@ -29,7 +29,7 @@ Drop `ANTHROPIC_BASE_URL` for prod.
 ## Deploy
 
 ```shell
-modal deploy sandbox/sandbox/gcemaj/demos/cma/privatesandbox-modal/modal_sandbox_webhook.py
+modal deploy modal_sandbox_webhook.py
 ```
 
 This prints a `*.modal.run` URL. Register that URL as a webhook for `session.status_run_started` in Console (or via the API), copy the issued secret, then update:

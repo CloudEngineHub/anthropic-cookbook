@@ -6,7 +6,7 @@ entrypoint is `ant beta:worker run`. Each container gets a `/workspace` (the
 agent's working tree; skills download here) backed by a per-session Docker
 volume so the tree and skills survive across containers for one session.
 
-This is the no-cloud variant of `../privatesandbox-cf/` (which runs the same
+This is the no-cloud variant of `../self_hosted_sandbox-cf/` (which runs the same
 `ant beta:worker run` entrypoint, but in Cloudflare Containers): same CLI, same
 env contract, just plain Docker on a host you control.
 

@@ -26,7 +26,7 @@ Deploy:
       ANTHROPIC_WEBHOOK_SECRET=placeholder \
       ANTHROPIC_ENVIRONMENT_KEY=placeholder \
       ANTHROPIC_ENVIRONMENT_ID=env_01...
-  modal deploy sandbox/sandbox/gcemaj/demos/cma/privatesandbox-modal/modal_sandbox_webhook.py
+  modal deploy modal_sandbox_webhook.py
   # register the printed URL with Anthropic, then re-create the secret with --force.
 """
 

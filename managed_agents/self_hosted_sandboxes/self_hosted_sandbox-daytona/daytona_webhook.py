@@ -28,7 +28,7 @@ SDK_WHEEL = "https://app.stainless.com/pkg/s/anthropic-python/00209c25418497163e
 # Same provider-agnostic tool_dispatcher() runner the Modal demo uses.
 RUNNER_SRC = (
     Path(__file__).resolve().parent.parent
-    / "privatesandbox-modal"
+    / "self_hosted_sandbox-modal"
     / "sandbox_runner.py"
 ).read_text()
 
