@@ -55,7 +55,6 @@ silently fail to download).
 ```sh
 export ANTHROPIC_ENVIRONMENT_ID=env_...
 export ANTHROPIC_ENVIRONMENT_KEY=sk-ant-oat...
-# export ANTHROPIC_BASE_URL=https://api-staging.anthropic.com  # for staging
 ./start.sh
 ```
 

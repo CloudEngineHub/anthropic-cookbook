@@ -15,8 +15,9 @@ tag = "v1"
 new_sqlite_classes = ["SandboxRunner"]
 
 [vars]
-ANTHROPIC_BASE_URL = "https://api-staging.anthropic.com"
-ANTHROPIC_ENVIRONMENT_ID = "env_016NTMz2dMMkmhkrGh2HEF83"
+ANTHROPIC_BASE_URL = "https://api.anthropic.com"
+# Replace with your self-hosted environment id (Console → Environments).
+ANTHROPIC_ENVIRONMENT_ID = "env_01..."
 
 # Secrets (set via `wrangler secret put`):
 #   ANTHROPIC_WEBHOOK_SECRET

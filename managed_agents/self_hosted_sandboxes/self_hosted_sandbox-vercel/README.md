@@ -42,7 +42,6 @@ vercel link
 vercel env add ANTHROPIC_WEBHOOK_SECRET   # placeholder for now
 vercel env add ANTHROPIC_ENVIRONMENT_ID
 vercel env add ANTHROPIC_ENVIRONMENT_KEY
-vercel env add ANTHROPIC_BASE_URL         # https://api-staging.anthropic.com to run against staging
 ```
 
 ## Deploy

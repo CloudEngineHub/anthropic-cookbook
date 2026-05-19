@@ -54,9 +54,10 @@ def _verify_webhook(
 ) -> UnwrapWebhookEvent:
     try:
         return client.beta.webhooks.unwrap(raw.decode(), headers=headers)
-    except Exception as e:
-        # WebhookVerificationError / KeyError messages are signature/config
-        # shaped, never the request body — safe to log.
+    except (anthropic.WebhookVerificationError, KeyError) as e:
+        # Messages are signature/config shaped, never the request body — safe
+        # to log. Other exceptions propagate (they indicate a bug, not a bad
+        # delivery).
         print(f"[webhook] signature reject: {type(e).__name__}: {e}", flush=True)
         raise HTTPException(
             status_code=401, detail="signature verification failed"

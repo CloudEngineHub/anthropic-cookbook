@@ -20,11 +20,8 @@ modal setup   # auth to your Modal workspace
 modal secret create cma-private-sandboxes-secrets \
     ANTHROPIC_WEBHOOK_SECRET=placeholder \
     ANTHROPIC_ENVIRONMENT_ID='env_...' \
-    ANTHROPIC_ENVIRONMENT_KEY='sk-ant-oat...' \
-    ANTHROPIC_BASE_URL='https://api-staging.anthropic.com'
+    ANTHROPIC_ENVIRONMENT_KEY='sk-ant-oat...'
 ```
-
-Drop `ANTHROPIC_BASE_URL` for prod.
 
 ## Deploy
 
@@ -39,7 +36,6 @@ modal secret create cma-private-sandboxes-secrets \
     ANTHROPIC_WEBHOOK_SECRET='whsec_...' \
     ANTHROPIC_ENVIRONMENT_ID='env_...' \
     ANTHROPIC_ENVIRONMENT_KEY='sk-ant-oat...' \
-    ANTHROPIC_BASE_URL='https://api-staging.anthropic.com' \
     --force
 ```
 

@@ -81,14 +81,14 @@ export ANTHROPIC_ENVIRONMENT_KEY="sk-ant-oat01-..."
 
 ```
 ant beta:worker poll \
-  --environment-id "env_01F9z9WM52grdeXJnpnHZxBk" \
+  --environment-id "env_01..." \
   --workdir "/workspace"
 ```
 
 Every flag also reads from an environment variable, so a zero-flag invocation works for systemd or compose:
 
 ```
-ANTHROPIC_ENVIRONMENT_ID=env_01F9z9WM52grdeXJnpnHZxBk \
+ANTHROPIC_ENVIRONMENT_ID=env_01... \
 ANTHROPIC_ENVIRONMENT_KEY=sk-ant-oat01-... \
 ant beta:worker poll --workdir /workspace
 ```

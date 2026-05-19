@@ -18,3 +18,5 @@ uvicorn daytona_webhook:app --host 0.0.0.0 --port 8080
 ```
 
 Deploy the FastAPI app anywhere that can serve HTTP and reach the Daytona API (Fly, Render, a VM behind a tunnel, etc.), then register its URL as the webhook endpoint.
+
+> **Cold-start note:** `_spawn()` runs `pip install <sdk-wheel>` inside each fresh Daytona sandbox, which adds ~10–15s before the runner starts. For production, pre-bake the wheel into a custom Daytona image and drop the `pip install` line.
