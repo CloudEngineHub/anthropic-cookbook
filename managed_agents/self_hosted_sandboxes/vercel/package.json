@@ -1,5 +1,5 @@
 {
-  "name": "cma-private-sandbox-vercel",
+  "name": "cma-self-hosted-sandbox-vercel",
   "private": true,
   "type": "module",
   "scripts": {

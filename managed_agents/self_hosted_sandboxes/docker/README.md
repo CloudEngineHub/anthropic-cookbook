@@ -1,4 +1,4 @@
-# Docker demo — CMA Private Sandboxes
+# Docker demo — Self-Hosted Sandboxes
 
 The host runs `ant beta:worker poll` directly; per claimed work item its
 `--on-work` script (`on-work.sh`) `docker run`s a per-session container whose

@@ -14,7 +14,7 @@ Flow per webhook delivery:
      runner uses for everything. ``auto_stop=False`` because the sandbox owns
      ``/stop``, not the webhook — see sandbox_runner.py.
 
-Secrets (modal secret create cma-private-sandboxes-secrets ...):
+Secrets (modal secret create cma-self-hosted-sandboxes-secrets ...):
   ANTHROPIC_WEBHOOK_SECRET   - issued by Anthropic at webhook registration
   ANTHROPIC_ENVIRONMENT_ID   - the self-hosted environment id
   ANTHROPIC_ENVIRONMENT_KEY  - the environment key: Bearer auth for the work
@@ -22,7 +22,7 @@ Secrets (modal secret create cma-private-sandboxes-secrets ...):
   ANTHROPIC_BASE_URL         - optional, default https://api.anthropic.com
 
 Deploy:
-  modal secret create cma-private-sandboxes-secrets \
+  modal secret create cma-self-hosted-sandboxes-secrets \
       ANTHROPIC_WEBHOOK_SECRET=placeholder \
       ANTHROPIC_ENVIRONMENT_KEY=placeholder \
       ANTHROPIC_ENVIRONMENT_ID=env_01...
@@ -40,8 +40,8 @@ import modal
 from anthropic.types.beta import UnwrapWebhookEvent
 from fastapi import HTTPException, Request
 
-APP_NAME = "cma-private-sandboxes"
-SECRET_NAME = "cma-private-sandboxes-secrets"
+APP_NAME = "cma-self-hosted-sandboxes"
+SECRET_NAME = "cma-self-hosted-sandboxes-secrets"
 
 SDK_PACKAGE = "anthropic"
 RUNNER_PATH = "/root/sandbox_runner.py"

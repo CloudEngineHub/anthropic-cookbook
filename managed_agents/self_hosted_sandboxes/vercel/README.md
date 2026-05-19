@@ -1,4 +1,4 @@
-# Vercel demo — CMA Private Sandboxes
+# Vercel demo — Self-Hosted Sandboxes
 
 Same webhook → drain-queue → per-session runner shape as the Modal, Daytona,
 and Cloudflare demos, but the runner is a **Vercel Sandbox running the TS
