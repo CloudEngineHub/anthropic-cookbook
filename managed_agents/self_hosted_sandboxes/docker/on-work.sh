@@ -17,7 +17,7 @@ cat >/dev/null  # drain the work JSON on stdin
 : "${ANTHROPIC_WORK_ID:?on-work: ANTHROPIC_WORK_ID not set by poller}"
 : "${ANTHROPIC_ENVIRONMENT_KEY:?on-work: ANTHROPIC_ENVIRONMENT_KEY not set by poller}"
 
-IMAGE="${CMA_IMAGE:-cma-private-sandbox-docker}"
+IMAGE="${CMA_IMAGE:-cma-self-hosted-sandbox-docker}"
 NAME="cma-${ANTHROPIC_SESSION_ID}"     # session ids are docker-name-safe
 VOLUME="cma-ws-${ANTHROPIC_SESSION_ID}"
 

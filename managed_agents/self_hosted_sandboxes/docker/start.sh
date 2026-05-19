@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Host-side launcher for the Docker variant of the CMA private-sandbox demo.
+# Host-side launcher for the Docker variant of the CMA self-hosted sandbox demo.
 #
 # Builds the per-session image, then runs `ant beta:worker poll` on the host
 # with --on-work pointed at on-work.sh, which `docker run`s a per-session
@@ -29,7 +29,7 @@ command -v ant >/dev/null || {
   exit 1
 }
 
-IMAGE="${CMA_IMAGE:-cma-private-sandbox-docker}"
+IMAGE="${CMA_IMAGE:-cma-self-hosted-sandbox-docker}"
 echo "[start] building ${IMAGE} (ant CLI pinned in Dockerfile)…"
 docker build -t "$IMAGE" .
 

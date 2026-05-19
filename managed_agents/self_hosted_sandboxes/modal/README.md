@@ -1,4 +1,4 @@
-# Modal demo — CMA Private Sandboxes
+# Modal demo — Self-Hosted Sandboxes
 
 Reference implementation of the [usage guide](../docs/usage-guide.md)'s webhook flow on [Modal](https://modal.com). Two files:
 
@@ -17,7 +17,7 @@ modal setup   # auth to your Modal workspace
 ## Configure
 
 ```shell
-modal secret create cma-private-sandboxes-secrets \
+modal secret create cma-self-hosted-sandboxes-secrets \
     ANTHROPIC_WEBHOOK_SECRET=placeholder \
     ANTHROPIC_ENVIRONMENT_ID='env_...' \
     ANTHROPIC_ENVIRONMENT_KEY='sk-ant-oat...'
@@ -32,7 +32,7 @@ modal deploy modal_sandbox_webhook.py
 This prints a `*.modal.run` URL. Register that URL as a webhook for `session.status_run_started` in Console (or via the API), copy the issued secret, then update:
 
 ```shell
-modal secret create cma-private-sandboxes-secrets \
+modal secret create cma-self-hosted-sandboxes-secrets \
     ANTHROPIC_WEBHOOK_SECRET='whsec_...' \
     ANTHROPIC_ENVIRONMENT_ID='env_...' \
     ANTHROPIC_ENVIRONMENT_KEY='sk-ant-oat...' \
@@ -53,14 +53,14 @@ client.beta.sessions.events.send(session.id, events=[{"type": "user.message", "c
 You should see, in order:
 
 ```shell
-modal app logs cma-private-sandboxes
+modal app logs cma-self-hosted-sandboxes
 # [webhook] event=session.status_run_started session_id=...
 # [webhook] acked work=... session=... sandbox=sb-... (created)
 ```
 
 Sandbox stdout (the `[runner]` lines) shows in the Modal dashboard under
-**Apps → cma-private-sandboxes → Sandboxes**.
+**Apps → cma-self-hosted-sandboxes → Sandboxes**.
 
 ## Iterating
 
-Editing either Python file requires a redeploy (`modal deploy ...`). Editing only secrets does not. To force a clean slate while iterating, `modal app stop cma-private-sandboxes` before redeploying.
+Editing either Python file requires a redeploy (`modal deploy ...`). Editing only secrets does not. To force a clean slate while iterating, `modal app stop cma-self-hosted-sandboxes` before redeploying.

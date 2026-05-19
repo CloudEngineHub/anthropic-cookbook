@@ -51,7 +51,7 @@ const RUNNER_SOURCE = readFileSync(
 // toolRunner() API surface matches.
 const RUNNER_PACKAGE_JSON = JSON.stringify(
   {
-    name: "cma-private-sandbox-runner",
+    name: "cma-self-hosted-sandbox-runner",
     private: true,
     type: "module",
     dependencies: { "@anthropic-ai/sdk": SDK_VERSION, minimatch: "^9.0.5" },

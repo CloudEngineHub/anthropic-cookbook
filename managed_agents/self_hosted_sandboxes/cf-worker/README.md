@@ -1,4 +1,4 @@
-# Cloudflare demo — CMA Private Sandboxes (pure-Worker variant)
+# Cloudflare demo — Self-Hosted Sandboxes (pure-Worker variant)
 
 Same webhook → drain-queue → per-session runner shape as `../cf/`, but the runner is a **Durable Object running the TS `client.beta.sessions.events.toolRunner()`** (`src/runner.ts`) with an **in-isolate fake filesystem** (`src/tools.ts`) instead of a real container. `read`/`write`/`edit`/`glob`/`grep` operate on a `Map<string,string>` held in the DO; `bash` returns a not-available stub.
 

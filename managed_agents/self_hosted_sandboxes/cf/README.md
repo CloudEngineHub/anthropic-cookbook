@@ -1,4 +1,4 @@
-# Cloudflare demo — CMA Private Sandboxes (Container variant)
+# Cloudflare demo — Self-Hosted Sandboxes (Container variant)
 
 The Worker (`src/index.ts`) verifies the `session.status_run_started` webhook with `client.beta.webhooks.unwrap()`, then **drains the environment work queue** (poll → ack until empty) so any single delivery recovers earlier missed ones. Per work item it starts a per-session **Cloudflare Container** (`src/container.ts`) whose entrypoint is `ant beta:worker run` — the CLI handles heartbeat, backlog reconcile, SSE, the default tool set (`bash`/`read`/`write`/`edit`/`glob`/`grep`), and the work-item force-stop on exit.
 

@@ -1,5 +1,5 @@
 {
-  "name": "cma-private-sandbox-cf-worker",
+  "name": "cma-self-hosted-sandbox-cf-worker",
   "private": true,
   "type": "module",
   "scripts": {
