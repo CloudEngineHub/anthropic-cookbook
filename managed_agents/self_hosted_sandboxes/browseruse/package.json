@@ -1,0 +1,21 @@
+{
+  "name": "browseruse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --remote",
+    "deploy": "wrangler deploy --name browseruse-${SAFEUSER:-$(whoami)}",
+    "deploy:shared": "wrangler deploy",
+    "tail": "wrangler tail --name browseruse-${SAFEUSER:-$(whoami)}"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "https://app.stainless.com/pkg/s/anthropic-typescript/390776956d4f4fca9f3cad0eda32a4c59467bca2/dist.tar.gz",
+    "@cloudflare/puppeteer": "^1.0.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250320.0",
+    "typescript": "^5.6.0",
+    "wrangler": "^4.76.0"
+  }
+}

@@ -1,0 +1,24 @@
+name = "livepage"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[[durable_objects.bindings]]
+name = "PAGE"
+class_name = "LivePage"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LivePage"]
+
+[vars]
+ANTHROPIC_BASE_URL = "https://shoot-generating-lives-pins.trycloudflare.com"
+ANTHROPIC_BETA = "agent-api-2026-03-01"
+
+# Secrets (set via `wrangler secret put`):
+#   ANTHROPIC_API_KEY
+#   WEBHOOK_SECRET      (optional; unsigned requests accepted if unset)

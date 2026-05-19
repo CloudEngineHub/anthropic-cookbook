@@ -1,0 +1,27 @@
+name = "browseruse"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+browser = { binding = "BROWSER" }
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[[durable_objects.bindings]]
+name = "SESSION"
+class_name = "BrowserSession"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BrowserSession"]
+
+[vars]
+ANTHROPIC_BASE_URL = "https://api-staging.anthropic.com"
+ANTHROPIC_BETA = "agent-api-2026-03-01"
+VIEWPORT_WIDTH = "1280"
+VIEWPORT_HEIGHT = "800"
+
+# Secrets (set via `wrangler secret put`):
+#   ANTHROPIC_API_KEY
+#   WEBHOOK_SECRET      (optional)

@@ -1,0 +1,31 @@
+name = "cloudrepl"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[[durable_objects.bindings]]
+name = "REPL"
+class_name = "ReplSession"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ReplSession"]
+
+# Bundle .wasm imports as WebAssembly.Module (not Data) so QuickJS can
+# consume it directly — Workers rejects runtime instantiate-from-bytes.
+[[rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+fallthrough = true
+
+[vars]
+ANTHROPIC_BASE_URL = "https://shoot-generating-lives-pins.trycloudflare.com"
+ANTHROPIC_BETA = "agent-api-2026-03-01"
+
+# Secrets (set via `wrangler secret put`):
+#   ANTHROPIC_API_KEY   — same key the sessions-ui uses
+#   WEBHOOK_SECRET      — signing secret returned by POST /v1/webhooks

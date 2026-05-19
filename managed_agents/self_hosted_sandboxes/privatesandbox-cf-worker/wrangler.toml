@@ -1,0 +1,23 @@
+name = "cma-private-sandbox-worker"
+main = "src/index.ts"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[[durable_objects.bindings]]
+name = "RUNNER"
+class_name = "SandboxRunner"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SandboxRunner"]
+
+[vars]
+ANTHROPIC_BASE_URL = "https://api-staging.anthropic.com"
+ANTHROPIC_ENVIRONMENT_ID = "env_016NTMz2dMMkmhkrGh2HEF83"
+
+# Secrets (set via `wrangler secret put`):
+#   ANTHROPIC_WEBHOOK_SECRET
+#   ANTHROPIC_ENVIRONMENT_KEY
