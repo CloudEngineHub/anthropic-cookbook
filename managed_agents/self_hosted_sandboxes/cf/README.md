@@ -6,7 +6,7 @@ The CLI owns the idle policy (`--max-idle 60s` after `session.status_idle` with 
 
 No org API key reaches the runner: the container authenticates with the environment key — the single credential `ant beta:worker run` uses for the event stream, the lease heartbeat, and the work-item force-stop.
 
-See `../self_hosted_sandbox-cf-worker/` for the pure-Worker variant that runs the TS `SessionToolRunner` with an in-isolate fake filesystem instead of a real container.
+See `../cf-worker/` for the pure-Worker variant that runs the TS `SessionToolRunner` with an in-isolate fake filesystem instead of a real container.
 
 ```sh
 npm i

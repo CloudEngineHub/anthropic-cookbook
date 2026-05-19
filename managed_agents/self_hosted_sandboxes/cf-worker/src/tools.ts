@@ -2,8 +2,9 @@
  * In-isolate "fake sandbox" tools for the pure-Worker variant.
  *
  * Backed by a Map<string,string> held in the Durable Object — no real shell or
- * filesystem. Demonstrates passing custom tools to ToolDispatcher (same shape
- * as client.beta.messages.tool_runner accepts).
+ * filesystem. Demonstrates passing custom tools to
+ * client.beta.sessions.events.toolRunner (same shape as
+ * client.beta.messages.toolRunner accepts).
  */
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";

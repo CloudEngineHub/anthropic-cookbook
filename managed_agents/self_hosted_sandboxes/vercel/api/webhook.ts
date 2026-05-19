@@ -26,8 +26,7 @@ import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { Sandbox } from "@vercel/sandbox";
 
-const SDK_TARBALL =
-  "https://app.stainless.com/pkg/s/anthropic-typescript/9d2ab62380ef11d23ff45d8dc581659723721b81/dist.tar.gz";
+const SDK_VERSION = "^0.97.0";
 const SANDBOX_TIMEOUT_MS = 30 * 60 * 1000;
 const MAX_DRAIN = 25;
 // Where the runner's package.json + runner.mjs live and where `npm install` runs.
@@ -48,14 +47,14 @@ const RUNNER_SOURCE = readFileSync(
 );
 
 // The runner's package.json — installed inside the sandbox at spawn time.
-// Pinned to the same Stainless build the webhook handler uses so the
-// toolDispatcher() API surface matches.
+// Pinned to the same SDK version the webhook handler uses so the
+// toolRunner() API surface matches.
 const RUNNER_PACKAGE_JSON = JSON.stringify(
   {
     name: "cma-private-sandbox-runner",
     private: true,
     type: "module",
-    dependencies: { "@anthropic-ai/sdk": SDK_TARBALL, minimatch: "^9.0.5" },
+    dependencies: { "@anthropic-ai/sdk": SDK_VERSION, minimatch: "^9.0.5" },
   },
   null,
   2,
@@ -163,7 +162,7 @@ async function processWorkItem(
   // Reuse a live sandbox for the same session if KV has a mapping for it. The
   // runner inside is still streaming and dispatching; it just needs the
   // already-extended VM timeout. Without KV every delivery creates a fresh
-  // sandbox — toolDispatcher() dedups via seen/answered so a duplicate runner
+  // sandbox — SessionToolRunner dedups via seen/answered so a duplicate runner
   // is wasteful, not wrong.
   const existing = await findLiveSandbox(sessionId);
   if (existing) {
@@ -176,7 +175,7 @@ async function processWorkItem(
     timeout: SANDBOX_TIMEOUT_MS,
     networkPolicy: {
       // npm install + Anthropic API. Add github.com etc. if your tools need it.
-      allow: [new URL(baseURL()).hostname, "app.stainless.com", "registry.npmjs.org"],
+      allow: [new URL(baseURL()).hostname, "registry.npmjs.org"],
     },
   });
   // Record session_id → sandbox_id with a TTL matching the VM timeout so stale

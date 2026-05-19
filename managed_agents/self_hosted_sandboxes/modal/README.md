@@ -46,8 +46,8 @@ modal secret create cma-private-sandboxes-secrets \
 Create a session pointing at your environment id and send it a message:
 
 ```py
-session = client.sessions.create(agent=agent_id, environment_id=ENVIRONMENT_ID)
-client.sessions.events.send(session.id, events=[{"type": "user.message", "content": "ls -la"}])
+session = client.beta.sessions.create(agent=agent_id, environment_id=ENVIRONMENT_ID)
+client.beta.sessions.events.send(session.id, events=[{"type": "user.message", "content": "ls -la"}])
 ```
 
 You should see, in order:

@@ -24,11 +24,11 @@ from anthropic.types.beta import UnwrapWebhookEvent
 from daytona_sdk import CreateSandboxParams, Daytona
 from fastapi import FastAPI, HTTPException, Request
 
-SDK_WHEEL = "https://app.stainless.com/pkg/s/anthropic-python/00209c25418497163e3bc2c5839cf651d24822c3/anthropic-0.102.0-py3-none-any.whl"
-# Same provider-agnostic tool_dispatcher() runner the Modal demo uses.
+SDK_PACKAGE = "anthropic"
+# Same provider-agnostic sandbox_runner.py the Modal demo uses.
 RUNNER_SRC = (
     Path(__file__).resolve().parent.parent
-    / "self_hosted_sandbox-modal"
+    / "modal"
     / "sandbox_runner.py"
 ).read_text()
 
@@ -37,24 +37,31 @@ daytona = Daytona()  # reads DAYTONA_API_KEY / DAYTONA_API_URL from env
 
 
 @cache
-def _client() -> anthropic.Anthropic:
+def _client() -> anthropic.AsyncAnthropic:
     """Shared client for both webhook verification and the work poller.
 
-    The ``whsec_`` secret is passed to ``webhook_key`` as-is: the SDK
-    decodes its URL-safe base64 internally.
+    Async because ``client.beta.environments.work.poller(...)`` is async-only
+    (it lives on ``AsyncWork``). ``unwrap()`` is synchronous even on the async
+    client — do not ``await`` it. The ``whsec_`` secret is passed to
+    ``webhook_key`` as-is: the SDK decodes its URL-safe base64 internally.
     """
-    return anthropic.Anthropic(
+    return anthropic.AsyncAnthropic(
         auth_token=os.environ["ANTHROPIC_ENVIRONMENT_KEY"],
         webhook_key=os.environ["ANTHROPIC_WEBHOOK_SECRET"],
     )
 
 
 def _verify_webhook(
-    client: anthropic.Anthropic, raw: bytes, headers: "Mapping[str, str]"
+    client: anthropic.AsyncAnthropic, raw: bytes, headers: "Mapping[str, str]"
 ) -> UnwrapWebhookEvent:
+    # `unwrap()` verifies via `standardwebhooks` and lets its
+    # `WebhookVerificationError` propagate unwrapped — import it the same lazy
+    # way the SDK does (it's the `anthropic[webhooks]` extra).
+    from standardwebhooks import WebhookVerificationError
+
     try:
         return client.beta.webhooks.unwrap(raw.decode(), headers=headers)
-    except (anthropic.WebhookVerificationError, KeyError) as e:
+    except (WebhookVerificationError, KeyError) as e:
         # Messages are signature/config shaped, never the request body — safe
         # to log. Other exceptions propagate (they indicate a bug, not a bad
         # delivery).
@@ -87,7 +94,7 @@ def _spawn(
         )
     )
     sb.fs.upload_file("/root/sandbox_runner.py", RUNNER_SRC.encode())
-    sb.process.exec(f"pip install -q {SDK_WHEEL}", timeout=180)
+    sb.process.exec(f"pip install -q {SDK_PACKAGE}", timeout=180)
     sb.process.exec("nohup python /root/sandbox_runner.py >/tmp/runner.log 2>&1 &")
     return sb.id
 
@@ -99,17 +106,20 @@ def _find_live(session_id: str) -> str | None:
     return None
 
 
-def _drain_work(client: anthropic.Anthropic, environment_id: str) -> list[dict]:
+async def _drain_work(client: anthropic.AsyncAnthropic, environment_id: str) -> list[dict]:
     """Drain the queue via the SDK poller, spawning a sandbox per work item.
 
-    ``drain=True`` returns when the queue is empty (the webhook handler must
-    respond, not loop forever). ``auto_stop=False`` because each item is
-    handed off to a detached Daytona sandbox that owns ``/stop`` — the poller
-    must not terminate the lease out from under it.
+    ``client.beta.environments.work.poller`` is the user-facing entry point: it
+    builds a scoped sub-client from the environment key and yields each ack'd
+    work item. It is async-only (lives on ``AsyncWork``). ``drain=True`` returns
+    when the queue is empty (the webhook handler must respond, not loop forever).
+    ``auto_stop=False`` because each item is handed off to a detached Daytona
+    sandbox that owns ``/stop`` — the poller must not terminate the lease out
+    from under it.
     """
     environment_key = os.environ["ANTHROPIC_ENVIRONMENT_KEY"]
     spawned: list[dict] = []
-    for work in client.beta.environments.work.poller(
+    async for work in client.beta.environments.work.poller(
         environment_id=environment_id,
         environment_key=environment_key,
         # None -> omit -> non-blocking. The API rejects block_ms=0.
@@ -180,5 +190,5 @@ async def webhook(request: Request) -> dict:
     if event.data.type != "session.status_run_started":
         return {"status": "ignored", "event_type": event.data.type}
 
-    spawned = _drain_work(client, os.environ["ANTHROPIC_ENVIRONMENT_ID"])
+    spawned = await _drain_work(client, os.environ["ANTHROPIC_ENVIRONMENT_ID"])
     return {"status": "ok", "event_type": event.data.type, "spawned": spawned}

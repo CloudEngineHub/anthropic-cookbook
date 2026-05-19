@@ -2,7 +2,7 @@
 
 Set up your self-hosted environment in three steps. These instructions are always available in your environment details.
 
-These instructions are pinned to the released SDK builds: Python `0.102.0`, TypeScript `0.96.0`, `ant` CLI v1.8.0.
+These instructions are pinned to the released SDK builds: Python `0.103.0`, TypeScript `0.97.0`, `ant` CLI v1.9.0.
 
 ## 0. Prerequisites
 
@@ -19,23 +19,23 @@ If you're reading this, you were already gated in by us to have access to all th
 
 ```
 # Python SDK
-uv pip install https://app.stainless.com/pkg/s/anthropic-python/00209c25418497163e3bc2c5839cf651d24822c3/anthropic-0.102.0-py3-none-any.whl
+uv pip install anthropic
 
 # TS SDK
-npm i https://app.stainless.com/pkg/s/anthropic-typescript/9d2ab62380ef11d23ff45d8dc581659723721b81/dist.tar.gz
+npm i @anthropic-ai/sdk
 ```
 
 #### Using ant CLI for worker management
 
 Run this on the machine where you want the worker to run. It installs `ant`, which includes the worker that polls for jobs and executes them locally.
 
-Linux
+Linux / macOS
 ```
-SHA=cc2a5c39fc4b9aa69a43ccfc13c63523a40bf491
-ARCH=$(uname -m | sed -e 's/x86_64/amd64_v1/' -e 's/aarch64/arm64_v8.0/')
-curl -fsSL "https://app.stainless.com/pkg/s/anthropic-cli/${SHA}/dist.zip" -o /tmp/ant-dist.zip
-unzip -oj /tmp/ant-dist.zip "linux_linux_${ARCH}/ant" -d /tmp
-sudo install -m 0755 /tmp/ant /usr/local/bin/ant
+VERSION=1.9.0
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
+curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${VERSION}/ant_${VERSION}_${OS}_${ARCH}.tar.gz" \
+  | sudo tar -xz -C /usr/local/bin ant
 ant --version
 ```
 
@@ -115,12 +115,12 @@ If your control plane spawns a fresh container per session rather than one long-
 
 ```
 FROM your-base-image
-ARG ANT_SHA=cc2a5c39fc4b9aa69a43ccfc13c63523a40bf491
-ARG TARGETARCH
-ADD https://app.stainless.com/pkg/s/anthropic-cli/${ANT_SHA}/dist.zip /tmp/ant.zip
-RUN DIR=$([ "$TARGETARCH" = "arm64" ] && echo linux_linux_arm64_v8.0 || echo linux_linux_amd64_v1) && \
-    unzip -oj /tmp/ant.zip "${DIR}/ant" -d /usr/local/bin && \
-    chmod +x /usr/local/bin/ant && rm /tmp/ant.zip
+ARG ANT_VERSION=1.9.0
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+ADD https://github.com/anthropics/anthropic-cli/releases/download/v${ANT_VERSION}/ant_${ANT_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz /tmp/ant.tgz
+RUN tar -xzf /tmp/ant.tgz -C /usr/local/bin ant && \
+    chmod +x /usr/local/bin/ant && rm /tmp/ant.tgz
 WORKDIR /workspace
 ENTRYPOINT ["ant", "beta:worker", "run"]
 ```
@@ -170,7 +170,7 @@ The worker executes shell and file operations directly on the host. Run it insid
 
 ## Library usage
 
-The same poll/run worker is available as library code in each SDK if you want to embed it in your own process or customise the tools. `client.beta.environments.work.worker(...)` composes the whole loop — poll → set up the workdir + download the session agent's skills → run the tools while heartbeating the work-item lease → force-stop on exit → loop. It accepts the same tool type as `client.beta.messages.tool_runner`, so any tool you define with `@beta_async_tool` (Python) or `betaZodTool` / `BetaRunnableTool` (TypeScript) can be passed alongside the defaults via `tools=`.
+The same poll/run worker is available as library code in each SDK if you want to embed it in your own process or customise the tools. `client.beta.environments.work.worker(...)` composes the whole loop — poll → set up the workdir + download the session agent's skills → run the tools while heartbeating the work-item lease → force-stop on exit → loop. It accepts the same tool type as `client.beta.messages.tool_runner` / `.toolRunner`, so any tool you define with `@beta_async_tool` (Python) or `betaZodTool` / `BetaRunnableTool` (TypeScript) can be passed alongside the defaults via `tools=`.
 
 ### Python
 

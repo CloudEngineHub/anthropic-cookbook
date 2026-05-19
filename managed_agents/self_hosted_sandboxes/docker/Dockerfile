@@ -1,12 +1,12 @@
 FROM debian:12-slim
-ARG ANT_SHA=cc2a5c39fc4b9aa69a43ccfc13c63523a40bf491
-ARG TARGETARCH
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl unzip \
+ARG ANT_VERSION=1.9.0
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
  && rm -rf /var/lib/apt/lists/*
-ADD https://app.stainless.com/pkg/s/anthropic-cli/${ANT_SHA}/dist.zip /tmp/ant.zip
-RUN DIR=$([ "$TARGETARCH" = "arm64" ] && echo linux_linux_arm64_v8.0 || echo linux_linux_amd64_v1) \
- && unzip -oj /tmp/ant.zip "${DIR}/ant" -d /usr/local/bin \
- && chmod +x /usr/local/bin/ant && rm /tmp/ant.zip
+ADD https://github.com/anthropics/anthropic-cli/releases/download/v${ANT_VERSION}/ant_${ANT_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz /tmp/ant.tgz
+RUN tar -xzf /tmp/ant.tgz -C /usr/local/bin ant \
+ && chmod +x /usr/local/bin/ant && rm /tmp/ant.tgz
 # /workspace is the agent's working tree (skills download here, file tools are
 # scoped here). Created by WORKDIR; a per-session volume is mounted over it by
 # on-work.sh so the tree + skills survive across containers for one session.

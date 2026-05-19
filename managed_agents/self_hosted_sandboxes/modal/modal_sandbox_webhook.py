@@ -43,7 +43,7 @@ from fastapi import HTTPException, Request
 APP_NAME = "cma-private-sandboxes"
 SECRET_NAME = "cma-private-sandboxes-secrets"
 
-SDK_WHEEL = "https://app.stainless.com/pkg/s/anthropic-python/00209c25418497163e3bc2c5839cf651d24822c3/anthropic-0.102.0-py3-none-any.whl"
+SDK_PACKAGE = "anthropic"
 RUNNER_PATH = "/root/sandbox_runner.py"
 
 app = modal.App(APP_NAME)
@@ -56,13 +56,13 @@ _runner_src = Path(__file__).parent / "sandbox_runner.py"
 # never sees raw deliveries.
 webhook_image = (
     modal.Image.debian_slim(python_version="3.12")
-    .pip_install("fastapi[standard]", "standardwebhooks", SDK_WHEEL)
+    .pip_install("fastapi[standard]", "standardwebhooks", SDK_PACKAGE)
     .add_local_file(_runner_src, RUNNER_PATH, copy=True)
 )
 
 sandbox_image = (
     modal.Image.debian_slim(python_version="3.12")
-    .pip_install(SDK_WHEEL)
+    .pip_install(SDK_PACKAGE)
     .add_local_file(_runner_src, RUNNER_PATH, copy=True)
 )
 
@@ -86,9 +86,14 @@ def _verify_webhook(
     """``unwrap()`` is synchronous even on the async client — do not ``await``
     it. The ``whsec_`` secret is passed to ``webhook_key`` as-is: the SDK
     decodes its URL-safe base64 internally."""
+    # `unwrap()` verifies via `standardwebhooks` and lets its
+    # `WebhookVerificationError` propagate unwrapped — import it the same lazy
+    # way the SDK does (it's the `anthropic[webhooks]` extra).
+    from standardwebhooks import WebhookVerificationError
+
     try:
         return client.beta.webhooks.unwrap(raw.decode(), headers=headers)
-    except (anthropic.WebhookVerificationError, KeyError) as e:
+    except (WebhookVerificationError, KeyError) as e:
         # Messages are signature/config shaped, never the request body — safe
         # to log. Other exceptions propagate (they indicate a bug, not a bad
         # delivery).

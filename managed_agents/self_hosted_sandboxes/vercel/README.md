@@ -2,7 +2,7 @@
 
 Same webhook → drain-queue → per-session runner shape as the Modal, Daytona,
 and Cloudflare demos, but the runner is a **Vercel Sandbox running the TS
-`EnvironmentWorker.handleItem()`** with the SDK's `betaAgentToolset()` against the
+`EnvironmentWorker.handleItem()`** with the SDK's `betaAgentToolset20260401()` against the
 sandbox's real filesystem (`bash` / `read` / `write` / `edit` / `glob` / `grep`).
 
 The webhook function (`api/webhook.ts`) is a wake-up signal only. It verifies

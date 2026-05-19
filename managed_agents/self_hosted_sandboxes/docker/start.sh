@@ -7,7 +7,7 @@
 # only claims work and hands each item to the script.
 #
 # Requires: docker, and `ant` on PATH (same CLI build as the image — see
-# ANT_SHA in ./Dockerfile; install snippet in ./README.md).
+# ANT_VERSION in ./Dockerfile; install snippet in ./README.md).
 #
 # Env:
 #   ANTHROPIC_ENVIRONMENT_ID   - the self-hosted environment id (env_...)
@@ -25,7 +25,7 @@ export ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL:-https://api.anthropic.com}"
 command -v docker >/dev/null || { echo "docker not found on PATH" >&2; exit 1; }
 command -v ant >/dev/null || {
   echo "ant not found on PATH. Install the pinned build (see README.md):" >&2
-  grep -m1 ANT_SHA Dockerfile >&2
+  grep -m1 ANT_VERSION Dockerfile >&2
   exit 1
 }
 

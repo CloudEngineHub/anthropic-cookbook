@@ -8,9 +8,9 @@ Work top to bottom; each step is independent.
 
 | Component | Old | New (released) |
 |---|---|---|
-| Python SDK | `f05960786cb8cc64687c412a854c12a74e8d7d14` (`0.101.0`) | `00209c25418497163e3bc2c5839cf651d24822c3` (`0.102.0`) |
-| TypeScript SDK | `95eb73baf081255be96ba0e81b6adbed997a8cd0` | `9d2ab62380ef11d23ff45d8dc581659723721b81` (`0.96.0`) |
-| `ant` CLI | `ab077f895de18a8d09d6bcd3d65e269333f6870c` | `cc2a5c39fc4b9aa69a43ccfc13c63523a40bf491` (`ant` v1.8.0) |
+| Python SDK | `f05960786cb8cc64687c412a854c12a74e8d7d14` (`0.101.0`, prerelease build) | [`anthropic` `0.103.0`](https://pypi.org/project/anthropic/) on PyPI |
+| TypeScript SDK | `95eb73baf081255be96ba0e81b6adbed997a8cd0` (prerelease build) | [`@anthropic-ai/sdk` `0.97.0`](https://www.npmjs.com/package/@anthropic-ai/sdk) on npm |
+| `ant` CLI | `ab077f895de18a8d09d6bcd3d65e269333f6870c` (prerelease build) | GitHub release [`v1.9.0`](https://github.com/anthropics/anthropic-cli/releases/tag/v1.9.0) |
 
 There are **three** kinds of change: a new auth model, a renamed CLI command,
 and a reshaped library. They're independent — do them in any order.
@@ -71,7 +71,8 @@ Doc edits:
   `ANTHROPIC_ENVIRONMENT_KEY`; `ant worker dispatch` → `ant beta:worker run`.
 - **§ "Running the dispatcher as a container entrypoint":** the Dockerfile
   `ENTRYPOINT ["ant", "worker", "dispatch"]` → `["ant", "beta:worker", "run"]`;
-  bump `ARG ANT_SHA` to `cc2a5c3…`; drop `ANTHROPIC_SESSION_TOKEN` from the
+  switch `ARG ANT_SHA` (Stainless `dist.zip`) to `ARG ANT_VERSION=1.9.0` with
+  the GitHub-release `.tar.gz`; drop `ANTHROPIC_SESSION_TOKEN` from the
   "Pass … as container env vars" line, add `ANTHROPIC_ENVIRONMENT_KEY`.
 - **§ "Alternative: run the dispatcher directly":** `ant worker dispatch` →
   `ant beta:worker run`; `--session-token "$SESSION_TOKEN"` →
@@ -83,8 +84,10 @@ Doc edits:
   - `--allow-absolute-paths` → `--unrestricted-paths`
   - Everything else (`--environment-id`, `--on-work`, `--worker-id`,
     `--workdir`, `--max-idle`, `--log-format`, `--base-url`) is unchanged.
-- **§0 / install snippets:** bump the Python wheel, TS tarball, and `ant` CLI
-  `SHA` to the values in the table above.
+- **§0 / install snippets:** drop the prerelease Stainless URLs entirely —
+  install the published packages: `pip install anthropic` / `npm i
+  @anthropic-ai/sdk` for the SDKs, and the `ant` CLI from the GitHub release
+  `v1.9.0` `.tar.gz` (the versions in the table above).
 
 ```diff
 - ant worker dispatch \
@@ -124,8 +127,9 @@ and the dispatcher was split in two.
 
 Also new in the released TS SDK: **`toolRunner` / `SessionToolRunner` take
 `sessionId` positionally** — `toolRunner({ sessionId, tools })` →
-`toolRunner(sessionId, { tools })`. And `DispatchedToolCall.toolUseBlock` is
-renamed `toolUse` (`toolUseBlock` kept as a deprecated alias).
+`toolRunner(sessionId, { tools })`. And the per-call tool `run(args, context)`
+context object (`BetaToolRunContext`) renamed its `toolUseBlock` field to
+`toolUse` (`toolUseBlock` kept as a deprecated alias).
 
 ### 3c. The dispatcher split — `tool_dispatcher` → `SessionToolRunner` + `EnvironmentWorker`
 
@@ -137,8 +141,9 @@ That's now split:
 
 - **`SessionToolRunner`** (`client.beta.sessions.events.tool_runner(...)` /
   `.toolRunner(...)`) is **dispatch-only**: event stream + tool execution +
-  result posting. It takes `session_id` + `tools` (+ `environment_key`) — **no
-  `work_id`, no `environment_id`**. It does *not* heartbeat or force-stop.
+  result posting. It takes `session_id` + `tools` (Python also accepts an
+  optional `environment_key`; the TS `toolRunner` reads auth from the client) —
+  **no `work_id`, no `environment_id`**. It does *not* heartbeat or force-stop.
 - **`EnvironmentWorker`** is the full composition: poll → set up the workdir +
   download skills → run a `SessionToolRunner` while heartbeating the lease →
   force-stop on exit → loop. Build it with the factory
@@ -341,8 +346,8 @@ spawned.push(await spawnSandbox({ ..., environmentKey: env.ANTHROPIC_ENVIRONMENT
 (Python) / `betaAgentToolset20260401` (TS); per-tool factories gain the `beta_` /
 `beta` prefix; imports move to `anthropic.lib.tools.agent_toolset` /
 `@anthropic-ai/sdk/tools/agent-toolset/node`. `EnvironmentWorker` downloads the
-session's skills automatically, so the manual `ToolEnv(client=…, session_id=…)`
-pattern is only needed when you compose the runner by hand. In the skills
+session's skills automatically, so the manual `AgentToolContext(client=…,
+session_id=…)` pattern is only needed when you compose the runner by hand. In the skills
 section, "authenticates with … `sessions_token`" → "authenticates with the
 environment key"; the endpoint
 (`GET /v1/skills/{id}/versions/{version}/content`) is unchanged.

@@ -18,12 +18,12 @@ per-session calls.
 
 | Variant | Compute | Runner |
 |---|---|---|
-| [`self_hosted_sandbox-docker/`](self_hosted_sandbox-docker/) | Plain Docker on a host you control | `ant beta:worker run` in a per-session container |
-| [`self_hosted_sandbox-cf/`](self_hosted_sandbox-cf/) | Cloudflare Containers | `ant beta:worker run` in a per-session Cloudflare Container |
-| [`self_hosted_sandbox-cf-worker/`](self_hosted_sandbox-cf-worker/) | Cloudflare Workers (no container) | TS `SessionToolRunner` in a Durable Object with an in-isolate fake filesystem |
-| [`self_hosted_sandbox-modal/`](self_hosted_sandbox-modal/) | [Modal](https://modal.com) | Python `sandbox_runner.py` in a Modal Sandbox with a per-session Volume |
-| [`self_hosted_sandbox-daytona/`](self_hosted_sandbox-daytona/) | [Daytona](https://www.daytona.io/) | Same `sandbox_runner.py` uploaded to a Daytona sandbox |
-| [`self_hosted_sandbox-vercel/`](self_hosted_sandbox-vercel/) | Vercel Functions + Sandbox | Node `runner.mjs` in a Vercel Sandbox |
+| [`docker/`](docker/) | Plain Docker on a host you control | `ant beta:worker run` in a per-session container |
+| [`cf/`](cf/) | Cloudflare Containers | `ant beta:worker run` in a per-session Cloudflare Container |
+| [`cf-worker/`](cf-worker/) | Cloudflare Workers (no container) | TS `SessionToolRunner` in a Durable Object with an in-isolate fake filesystem |
+| [`modal/`](modal/) | [Modal](https://modal.com) | Python `sandbox_runner.py` in a Modal Sandbox with a per-session Volume |
+| [`daytona/`](daytona/) | [Daytona](https://www.daytona.io/) | Same `sandbox_runner.py` uploaded to a Daytona sandbox |
+| [`vercel/`](vercel/) | Vercel Functions + Sandbox | Node `runner.mjs` in a Vercel Sandbox |
 
 ## Getting started
 

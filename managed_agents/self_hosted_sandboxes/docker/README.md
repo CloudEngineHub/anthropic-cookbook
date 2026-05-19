@@ -6,7 +6,7 @@ entrypoint is `ant beta:worker run`. Each container gets a `/workspace` (the
 agent's working tree; skills download here) backed by a per-session Docker
 volume so the tree and skills survive across containers for one session.
 
-This is the no-cloud variant of `../self_hosted_sandbox-cf/` (which runs the same
+This is the no-cloud variant of `../cf/` (which runs the same
 `ant beta:worker run` entrypoint, but in Cloudflare Containers): same CLI, same
 env contract, just plain Docker on a host you control.
 
@@ -39,14 +39,14 @@ silently fail to download).
 
 - Docker
 - `ant` on the host's PATH, the **same build** pinned in `Dockerfile`
-  (`ARG ANT_SHA`). Install it:
+  (`ARG ANT_VERSION`). Install it:
 
   ```sh
-  SHA=cc2a5c39fc4b9aa69a43ccfc13c63523a40bf491
-  ARCH=$(uname -m | sed -e 's/x86_64/amd64_v1/' -e 's/aarch64/arm64_v8.0/')
-  curl -fsSL "https://app.stainless.com/pkg/s/anthropic-cli/${SHA}/dist.zip" -o /tmp/ant.zip
-  unzip -oj /tmp/ant.zip "linux_linux_${ARCH}/ant" -d /tmp
-  sudo install -m 0755 /tmp/ant /usr/local/bin/ant
+  VERSION=1.9.0
+  OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+  ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
+  curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${VERSION}/ant_${VERSION}_${OS}_${ARCH}.tar.gz" \
+    | sudo tar -xz -C /usr/local/bin ant
   ant --version
   ```
 

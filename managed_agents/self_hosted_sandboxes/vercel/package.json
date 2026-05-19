@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "https://app.stainless.com/pkg/s/anthropic-typescript/9d2ab62380ef11d23ff45d8dc581659723721b81/dist.tar.gz",
+    "@anthropic-ai/sdk": "^0.97.0",
     "@vercel/kv": "^3.0.0",
     "@vercel/sandbox": "^1.10.0",
     "minimatch": "^9.0.5"
