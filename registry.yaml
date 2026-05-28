@@ -266,6 +266,17 @@
   categories:
   - Claude Agent SDK
   - Agent Patterns
+- title: Hosting your agent
+  description: Deploy the research agent from notebook 00 through three tiers of operational
+    maturity (Docker, Modal, Kubernetes) with the same container image and HTTP interface
+    at every tier.
+  path: claude_agent_sdk/07_Hosting_the_agent.ipynb
+  authors:
+  - kevintang513
+  - anav-ant
+  date: '2026-05-22'
+  categories:
+  - Claude Agent SDK
 - title: Extended thinking
   description: Use Claude's extended thinking for transparent step-by-step reasoning
     with budget management.
