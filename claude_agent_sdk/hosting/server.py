@@ -31,21 +31,22 @@ import json
 import os
 import re
 import secrets
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent
-
-from claude_agent_sdk import ClaudeAgentOptions, ResultMessage, query
 
 # The agent we built in notebook 00. We import its system prompt so this server
 # deploys *that* agent; the tool list and buffer size below mirror send_query().
 from research_agent.agent import RESEARCH_SYSTEM_PROMPT
+from sse_starlette.sse import EventSourceResponse, ServerSentEvent
+
+from claude_agent_sdk import ClaudeAgentOptions, ResultMessage, query
 
 # Same shape the k8s gateway enforces: must start alphanumeric so a session_id
 # can never begin with "-" or "_" (keeps it safe as a filename or k8s label).
