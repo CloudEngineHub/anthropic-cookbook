@@ -62,11 +62,16 @@ MAX_BODY_BYTES = 256 * 1024
 # acceptable only for local poking, never for anything reachable by others.
 # A pair with an empty token (":alice") is dropped rather than mapped — an
 # empty key would make the empty Authorization header a valid credential.
-_TOKEN_TO_TENANT: dict[str, str] = dict(
-    pair.split(":", 1)
-    for pair in os.getenv("GATEWAY_TENANTS", "").split(",")
-    if ":" in pair and not pair.startswith(":")
-)
+_TOKEN_TO_TENANT: dict[str, str] = {}
+for _pair in os.getenv("GATEWAY_TENANTS", "").split(","):
+    _parts = _pair.split(":", 1)
+    if len(_parts) != 2:
+        continue
+    _token, _tenant = _parts[0].strip(), _parts[1].strip()
+    if not _token:
+        continue
+    _TOKEN_TO_TENANT[_token] = _tenant
+logger.info("gateway: loaded %d tenant token(s)", len(_TOKEN_TO_TENANT))
 
 # Session IDs must match this pattern to prevent path traversal / label abuse.
 _SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
@@ -106,6 +111,8 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="Claude Agent Gateway (k8s)", lifespan=lifespan)
 
 
+# Only enforces the cap for requests with Content-Length; chunked bodies
+# pass through. In production put a real body-size limit on the gateway/LB.
 @app.middleware("http")
 async def _limit_body_size(request: Request, call_next):
     length = request.headers.get("content-length")

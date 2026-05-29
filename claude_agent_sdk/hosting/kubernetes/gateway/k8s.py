@@ -44,10 +44,10 @@ except kubernetes.config.ConfigException:
     _k8s_available = False
 
 # AGENT_IMAGE is the container image for agent pods (e.g. "us-docker.pkg.dev/…/agent:latest").
-# Required when K8s is available; ignored otherwise.
+# Required when K8s is available; ignored otherwise. Validated at startup
+# (initialize_standby_pool), not import time, so a misconfigured gateway fails
+# its readiness probe instead of crash-looping on import.
 AGENT_IMAGE = os.environ.get("AGENT_IMAGE", "")
-if _k8s_available and not AGENT_IMAGE:
-    raise RuntimeError("AGENT_IMAGE env var is required when running inside Kubernetes")
 
 # The namespace where agent pods are created.  Namespaces are K8s's way of
 # partitioning resources — like folders for your cluster objects.
@@ -482,6 +482,8 @@ async def initialize_standby_pool() -> None:
     if not _k8s_available:
         logger.info("K8s unavailable — skipping standby pool initialization")
         return
+    if not AGENT_IMAGE:
+        raise RuntimeError("AGENT_IMAGE env var is required when running inside Kubernetes")
     logger.info(f"Initializing standby pool with {STANDBY_POOL_SIZE} pods")
     await _replenish_pool()
 

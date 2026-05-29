@@ -61,6 +61,7 @@ EOF
     kubectl wait --for=condition=ready node --all --timeout=120s
 else
     info "kind cluster '$CLUSTER' already exists — reusing"
+    REUSING_CLUSTER=1
 fi
 
 # 2. Images ─────────────────────────────────────────────────────────────────
@@ -94,9 +95,8 @@ kubectl -n claude-agent create secret generic anthropic-api-key \
 
 # Two demo tenants so you can watch the gateway enforce session ownership:
 # alice can read/continue/delete her sessions, bob gets a 403 on them.
-# Note: the gateway reads this at pod start — if you re-run this script
-# against an existing cluster, `kubectl -n claude-agent rollout restart
-# deploy/gateway` to pick up the regenerated tokens.
+# The gateway reads this secret at pod start, so on a re-run we restart the
+# deployment below once the manifests are applied.
 ALICE_TOKEN=$(openssl rand -hex 16)
 BOB_TOKEN=$(openssl rand -hex 16)
 kubectl -n claude-agent create secret generic gateway-tenants \
@@ -120,6 +120,14 @@ info "Applying manifests..."
 for f in manifests/*.yaml; do
     sed "s|REGISTRY_URL|${REG}|g" "$f" | kubectl apply -f -
 done
+
+# On a re-run the gateway pod predates the freshly regenerated GATEWAY_TENANTS
+# secret — restart it so the new tokens take effect.
+if [[ -n "${REUSING_CLUSTER:-}" ]]; then
+    info "Restarting gateway to pick up regenerated tenant tokens..."
+    kubectl -n claude-agent rollout restart deploy/gateway
+    kubectl -n claude-agent rollout status deploy/gateway --timeout=300s
+fi
 
 # 6. Wait ───────────────────────────────────────────────────────────────────
 info "Waiting for gateway to be ready (this can take a minute on first run)..."
