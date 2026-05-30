@@ -44,10 +44,10 @@ except kubernetes.config.ConfigException:
     _k8s_available = False
 
 # AGENT_IMAGE is the container image for agent pods (e.g. "us-docker.pkg.dev/…/agent:latest").
-# Required when K8s is available; ignored otherwise.
+# Required when K8s is available; ignored otherwise. Validated at startup
+# (initialize_standby_pool), not import time, so a misconfigured gateway fails
+# its readiness probe instead of crash-looping on import.
 AGENT_IMAGE = os.environ.get("AGENT_IMAGE", "")
-if _k8s_available and not AGENT_IMAGE:
-    raise RuntimeError("AGENT_IMAGE env var is required when running inside Kubernetes")
 
 # The namespace where agent pods are created.  Namespaces are K8s's way of
 # partitioning resources — like folders for your cluster objects.
@@ -64,6 +64,7 @@ _replenish_task: asyncio.Task | None = None
 # ---------------------------------------------------------------------------
 # Pod manifest builder
 # ---------------------------------------------------------------------------
+
 
 def _build_pod_manifest(
     *,
@@ -213,7 +214,7 @@ def _build_pod_manifest(
                 client.V1Volume(
                     name="egress-proxy-tls",
                     secret=client.V1SecretVolumeSource(
-                        secret_name="egress-proxy-tls",
+                        secret_name="egress-proxy-tls",  # noqa: S106 — k8s Secret name, not a credential
                     ),
                 ),
             ],
@@ -232,6 +233,7 @@ def _build_pod_manifest(
 # ---------------------------------------------------------------------------
 # Standby pool management
 # ---------------------------------------------------------------------------
+
 
 async def _create_standby_pod() -> str:
     """Create a single standby pod and return its name.
@@ -348,8 +350,7 @@ async def _count_standby_pods() -> int:
     return sum(
         1
         for p in pods.items
-        if p.status.phase in ("Pending", "Running")
-        and p.metadata.deletion_timestamp is None
+        if p.status.phase in ("Pending", "Running") and p.metadata.deletion_timestamp is None
     )
 
 
@@ -397,9 +398,7 @@ async def _claim_standby_pod(session_id: str) -> str | None:
                 body=body,
             )
             pod_ip = patched.status.pod_ip
-            logger.info(
-                f"Claimed standby pod {pod_name} for session {session_id} at {pod_ip}"
-            )
+            logger.info(f"Claimed standby pod {pod_name} for session {session_id} at {pod_ip}")
             return pod_ip
         except kubernetes.client.exceptions.ApiException as e:
             # Another gateway instance may have claimed this pod first,
@@ -433,8 +432,7 @@ async def _replenish_pool() -> None:
             return
 
         logger.info(
-            f"Replenishing standby pool: {current_count}/{STANDBY_POOL_SIZE}, "
-            "creating 1 pod"
+            f"Replenishing standby pool: {current_count}/{STANDBY_POOL_SIZE}, creating 1 pod"
         )
         pod_name = None
         try:
@@ -474,6 +472,7 @@ def _schedule_replenish() -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
+
 async def initialize_standby_pool() -> None:
     """Pre-warm the standby pool on gateway startup.
 
@@ -483,6 +482,8 @@ async def initialize_standby_pool() -> None:
     if not _k8s_available:
         logger.info("K8s unavailable — skipping standby pool initialization")
         return
+    if not AGENT_IMAGE:
+        raise RuntimeError("AGENT_IMAGE env var is required when running inside Kubernetes")
     logger.info(f"Initializing standby pool with {STANDBY_POOL_SIZE} pods")
     await _replenish_pool()
 
@@ -504,9 +505,7 @@ async def create_agent_pod(session_id: str) -> str:
         return pod_ip
 
     # No standby pods available — fall back to creating one on-demand
-    logger.warning(
-        f"No standby pods available for session {session_id}, creating on-demand"
-    )
+    logger.warning(f"No standby pods available for session {session_id}, creating on-demand")
     pod_name = f"agent-session-{session_id}"
     labels = {
         "app": "claude-agent",

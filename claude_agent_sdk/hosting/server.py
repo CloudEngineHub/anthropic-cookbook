@@ -31,21 +31,22 @@ import json
 import os
 import re
 import secrets
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent
-
-from claude_agent_sdk import ClaudeAgentOptions, ResultMessage, query
 
 # The agent we built in notebook 00. We import its system prompt so this server
 # deploys *that* agent; the tool list and buffer size below mirror send_query().
 from research_agent.agent import RESEARCH_SYSTEM_PROMPT
+from sse_starlette.sse import EventSourceResponse, ServerSentEvent
+
+from claude_agent_sdk import ClaudeAgentOptions, ResultMessage, query
 
 # Same shape the k8s gateway enforces: must start alphanumeric so a session_id
 # can never begin with "-" or "_" (keeps it safe as a filename or k8s label).
@@ -86,6 +87,8 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="Research Agent (Claude Agent SDK)", lifespan=_lifespan)
 
 
+# Only enforces the cap for requests with Content-Length; chunked bodies
+# pass through. In production put a real body-size limit on the gateway/LB.
 @app.middleware("http")
 async def _limit_body_size(request: Request, call_next):
     length = request.headers.get("content-length")
@@ -161,7 +164,9 @@ async def _remember(external_id: str, sdk_session_id: str) -> None:
     # Note: two concurrent *first* turns on the same external_id would each
     # start a fresh SDK session and last-write-wins here. Fine for this
     # cookbook's single-caller-per-session shape; a production server would
-    # lock around the read-create-write span, not just the write.
+    # lock around the read-create-write span, not just the write. The
+    # Kubernetes tier avoids this race with Redis SET NX — see
+    # kubernetes/gateway/k8s.py.
     async with _map_lock:
         if _session_map.get(external_id) == sdk_session_id:
             return

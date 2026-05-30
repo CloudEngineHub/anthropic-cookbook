@@ -40,6 +40,7 @@ async def relay_sse(
     payloads and the blank-line event delimiter exactly — no re-framing.
     """
     url = f"http://{pod_ip}:{AGENT_PORT}/sessions/{session_id}/messages"
+    # Not async with on purpose — the client must outlive send(..., stream=True).
     client = httpx.AsyncClient(timeout=_TIMEOUT)
     try:
         req = client.build_request("POST", url, json=body)
