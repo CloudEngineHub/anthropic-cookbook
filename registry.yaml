@@ -796,3 +796,16 @@
   categories:
   - Claude Managed Agents
   - Evals
+- title: Classifier fallback and billing for Claude Fable 5
+  description: Detect safety classifier blocks on Fable 5 and fall back to Opus 4.8
+    with server-side or SDK-based client-side fallback, including streaming behavior
+    and the new billing changes.
+  path: classifiers/fable_5_fallback_billing.ipynb
+  authors:
+  - Briiick
+  - maheshmurag
+  - mikaelagrace
+  date: '2026-06-09'
+  categories:
+  - Responses
+  - Safeguards
