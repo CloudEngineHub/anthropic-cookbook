@@ -513,6 +513,16 @@
   date: '2024-12-19'
   categories:
   - Agent Patterns
+- title: Async multi-agent orchestration
+  description: Two async multi-agent patterns — a fixed N-agent team with peer messaging
+    through a shared hub, and dynamically spawned async subagents — reduced to their
+    bare messaging and lifecycle mechanics.
+  path: patterns/agents/async_multi_agent_orchestration.ipynb
+  authors:
+  - paulchen-go
+  date: '2026-06-08'
+  categories:
+  - Agent Patterns
 - title: Introduction to Claude Skills
   description: Create documents, analyze data, automate workflows with Claude's Excel,
     PowerPoint, PDF skills.
