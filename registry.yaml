@@ -820,3 +820,14 @@
   - Responses
   - Safeguards
   - Billing
+- title: Reproduce Claude's agentic search benchmark scores in the Messages API
+  description: Build a Messages API harness that reproduces published DeepSearchQA
+    and BrowseComp scores, using programmatic tool calling, server-side compaction,
+    and task budgets.
+  path: evals/agentic_search/reproduce_agentic_search_benchmarks.ipynb
+  authors:
+  - mengtingli-ant
+  date: '2026-06-25'
+  categories:
+  - Evals
+  - Tools
