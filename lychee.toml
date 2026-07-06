@@ -15,8 +15,8 @@ max_cache_age = "1d"
 max_retries = 3
 retry_wait_time = 2
 
-# Skip checking code blocks (important for notebooks with example code)
-skip_code_blocks = true
+# Code blocks are skipped by default (include_verbatim defaults to false;
+# the old skip_code_blocks field was removed in lychee 0.23)
 
 # Fallback extensions for local file checking
 # When checking relative links, try these extensions if the exact path doesn't exist
