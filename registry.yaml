@@ -792,6 +792,18 @@
   categories:
   - Claude Managed Agents
   - Tools
+- title: 'Coordinator pattern: big models for planning, small models for execution'
+  description: Two-model team economics via the multiagent coordinator config — a
+    frontier coordinator plans and synthesizes while cheap search workers do the
+    token-heavy web reading in parallel threads, compared against a rigor-matched
+    solo-frontier control with real bills. Covers per-thread usage metering and
+    cost attribution.
+  path: managed_agents/CMA_plan_big_execute_small.ipynb
+  authors:
+  - bradabrams
+  date: '2026-07-02'
+  categories:
+  - Claude Managed Agents
 - title: 'Outcomes: agents that verify their own work'
   description: 'Build a grade-and-revise loop with Outcomes: a writer drafts a cited
     research brief, a stateless grader fetches every URL and checks every quote against
@@ -818,8 +830,6 @@
   date: '2026-06-09'
   categories:
   - Responses
-  - Safeguards
-  - Billing
 - title: Reproduce Claude's agentic search benchmark scores in the Messages API
   description: Build a Messages API harness that reproduces published DeepSearchQA
     and BrowseComp scores, using programmatic tool calling, server-side compaction,
