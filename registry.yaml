@@ -793,12 +793,11 @@
   - Claude Managed Agents
   - Tools
 - title: 'Coordinator pattern: big models for planning, small models for execution'
-  description: Pair a frontier coordinator with cheap search workers via the multiagent
-    coordinator config: workers do the token-hungry web reading in parallel threads
-    at the cheap rate, and on a rigor-matched comparison the team came out ~2.5x
-    cheaper and 3x faster than one frontier agent doing its own reading. Covers
-    per-thread cost attribution via each session thread's typed cumulative usage and an honest
-    solo-frontier control.
+  description: Two-model team economics via the multiagent coordinator config — a
+    frontier coordinator plans and synthesizes while cheap search workers do the
+    token-heavy web reading in parallel threads, compared against a rigor-matched
+    solo-frontier control with real bills. Covers per-thread usage metering and
+    cost attribution.
   path: managed_agents/CMA_plan_big_execute_small.ipynb
   authors:
   - bradabrams
