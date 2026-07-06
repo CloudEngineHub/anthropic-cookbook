@@ -34,9 +34,10 @@ exclude_path = [
 ]
 
 
-# Accept 403 (forbidden) and 429 (rate limited) as valid
-# These are returned by gated and rate-limited sites
-accept = [403, 429]
+# Accepted status codes: success codes plus 403 (gated sites) and
+# 429 (rate limited). Note this list REPLACES lychee's defaults, so the
+# 2xx codes must be listed explicitly.
+accept = [200, 201, 202, 203, 204, 206, 301, 302, 304, 307, 308, 403, 429]
 
 # User agent for requests ("headers" was renamed in lychee 0.23; the only
 # header we set is the user agent, which has a dedicated option)
