@@ -46,7 +46,6 @@ exclude = [
 # These are returned by gated and rate-limited sites
 accept = [403, 429]
 
-# Headers for authenticated requests
-headers = [
-    "User-Agent=Mozilla/5.0 (compatible; lychee/0.20.1; anthropic-cookbook)"
-]
+# User agent for requests ("headers" was renamed in lychee 0.23; the only
+# header we set is the user agent, which has a dedicated option)
+user_agent = "Mozilla/5.0 (compatible; lychee; anthropic-cookbook)"
