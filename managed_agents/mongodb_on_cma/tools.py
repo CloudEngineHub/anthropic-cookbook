@@ -15,6 +15,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 from .config import (
+    ANTHROPIC_AUTH_ENV,
     DEFAULT_MODEL,
     EMBED_DIM,
     REQUIRED_ENV,
@@ -87,6 +88,18 @@ def missing_required_env(env=None) -> list[str]:
 
     source = env if env is not None else os.environ
     return [name for name in REQUIRED_ENV if not source.get(name)]
+
+
+def has_anthropic_auth(env=None) -> bool:
+    """True if any Anthropic auth signal is present (API key, auth token, or profile).
+
+    Non-API-key auth (e.g. `ant` CLI workload-identity federation) is valid, so this is a soft
+    check: a False result should warn, not block — the SDK still resolves credentials itself.
+    """
+    import os
+
+    source = env if env is not None else os.environ
+    return any(source.get(name) for name in ANTHROPIC_AUTH_ENV)
 
 
 def server_version(coll) -> str:

@@ -15,7 +15,12 @@ VECTOR_INDEX_NAME = "transactions_vector_index"
 SEARCH_INDEX_NAME = "transactions_search_index"
 LEXICAL_PATHS = ["text", "sender.name", "recipient.name"]
 PROJECT_FIELDS = ["transaction_id", "text", "amount", "sender", "recipient", "decision"]
-REQUIRED_ENV = ("ANTHROPIC_API_KEY", "MONGO_URI")
+# MONGO_URI is required: it is the host-side data path this cookbook owns.
+# Anthropic auth is intentionally NOT hard-required — the SDK resolves an API key, an auth
+# token, or a profile (e.g. `ant` CLI workload-identity federation), so we soft-check for any
+# of these signals rather than demanding ANTHROPIC_API_KEY specifically.
+REQUIRED_ENV = ("MONGO_URI",)
+ANTHROPIC_AUTH_ENV = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_PROFILE")
 
 ATLAS_EMBEDDINGS_URL = "https://ai.mongodb.com/v1/embeddings"
 ATLAS_RERANK_URL = "https://ai.mongodb.com/v1/rerank"
