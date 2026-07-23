@@ -851,4 +851,18 @@
   date: '2026-06-25'
   categories:
   - Evals
+- title: Fraud Review Agent with MongoDB Atlas and Claude Managed Agents
+  description: Bring MongoDB Atlas to a Claude Managed Agent as its retrieval engine, graph
+    store, and system of record — three credential-safe ways to connect, the four retrieval
+    patterns (vector, full-text, reciprocal rank fusion, $graphLookup) as liftable building
+    blocks, and a human-in-the-loop fraud-review agent that records decisions and an
+    append-only audit trail in the same cluster.
+  path: managed_agents/CMA_with_mongodb_atlas.ipynb
+  authors:
+  - mohammaddaoudfarooqi
+  date: '2026-06-22'
+  categories:
+  - Claude Managed Agents
+  - RAG & Retrieval
+  - Integrations
   - Tools
