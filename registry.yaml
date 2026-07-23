@@ -87,12 +87,13 @@
   categories:
   - RAG & Retrieval
   - Tools
-- title: Giving Claude a crop tool for better image analysis
-  description: Give Claude a crop tool to zoom into image regions for detailed analysis
-    of charts, documents, and diagrams.
+- title: Giving Claude a zoom tool for reading fine image detail
+  description: Give Claude a zoom tool that crops a region and magnifies it for detailed
+    analysis of charts, documents, and diagrams.
   path: multimodal/crop_tool.ipynb
   authors:
   - nadine-anthropic
+  - bradabrams
   date: '2025-11-22'
   categories:
   - Multimodal
