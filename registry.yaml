@@ -438,8 +438,8 @@
   categories:
   - Agent Patterns
   - Responses
-- title: Summarizing web page content with Claude Haiku 4.5
-  description: Fetch and summarize web page content using Claude Haiku 4.5 via URL extraction.
+- title: Summarizing web page content with Claude Haiku
+  description: Fetch and summarize web page content using Claude Haiku via URL extraction.
   path: misc/read_web_pages_with_haiku.ipynb
   authors:
   - alexalbertt
